@@ -1,7 +1,7 @@
 services:
   rendez-vous:
     build: .
-    image: rendez-vous:latest
+    image: ${IMAGE:-rendez-vous:latest}
     restart: unless-stopped
     env_file: .env
     ports:

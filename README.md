@@ -31,6 +31,26 @@ L'application écoute sur le port `3000` (modifiable avec `HOST_PORT`). En produ
 
 Les réglages, le jeton Google et le journal des réservations (`bookings.jsonl`) sont stockés dans le volume Docker `rdv-data` (`/data` dans le conteneur).
 
+### Déployer l'image construite par la CI
+
+À chaque push sur `main`, GitHub Actions lance les tests puis publie l'image (amd64 + arm64) sur GitHub Container Registry :
+
+- `ghcr.io/<utilisateur>/rendez-vous:latest` : dernière version de `main`
+- `ghcr.io/<utilisateur>/rendez-vous:1.2.0` : pour un tag git `v1.2.0`
+- `ghcr.io/<utilisateur>/rendez-vous:sha-abc1234` : un commit précis
+
+Sur le serveur, il suffit de `docker-compose.yml` et `.env`, sans les sources :
+
+```bash
+# une seule fois : jeton GitHub (classic) avec le droit read:packages, l'image étant privée
+echo "$GITHUB_TOKEN" | docker login ghcr.io -u <utilisateur> --password-stdin
+
+# dans .env : IMAGE=ghcr.io/<utilisateur>/rendez-vous:latest
+docker compose pull && docker compose up -d
+```
+
+Pour mettre à jour, relancez `docker compose pull && docker compose up -d`.
+
 ## 3. Configurer
 
 1. Ouvrez `https://VOTRE-DOMAINE/admin` (identifiant `ADMIN_USER` / mot de passe `ADMIN_PASSWORD`).
