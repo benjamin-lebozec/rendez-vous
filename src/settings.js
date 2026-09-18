@@ -8,6 +8,8 @@ export const DEFAULT_SETTINGS = {
     title: 'Prendre rendez-vous',
     intro: 'Choisissez un créneau qui vous convient. Une invitation avec un lien de visio vous sera envoyée par e-mail.',
     organizerName: '',
+    // Empty = public page; otherwise visitors must enter it before booking.
+    password: '',
   },
   event: {
     summary: 'Rendez-vous avec {prenom} {nom}',
@@ -109,6 +111,7 @@ export function validateSettings(input) {
       title: str(s.page?.title, 150, 'Titre') || DEFAULT_SETTINGS.page.title,
       intro: str(s.page?.intro, 2000, 'Introduction'),
       organizerName: str(s.page?.organizerName, 150, 'Nom affiché'),
+      password: str(s.page?.password, 100, 'Mot de passe d’accès'),
     },
     event: {
       summary: str(s.event?.summary, 300, 'Titre de l’événement') || DEFAULT_SETTINGS.event.summary,

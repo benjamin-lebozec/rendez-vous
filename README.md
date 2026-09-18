@@ -5,6 +5,7 @@ Page publique de prise de rendez-vous basée sur les disponibilités de votre ag
 - Le visiteur choisit un créneau libre dans **tous** les agendas configurés, puis renseigne obligatoirement prénom, nom, e-mail et téléphone.
 - L'événement est créé dans votre agenda, avec vos collègues et le visiteur comme invités (il apparaît dans leur agenda et Google leur envoie l'invitation par e-mail).
 - Un lien **Google Meet** est ajouté par défaut.
+- Accès optionnellement protégé par un **mot de passe** simple, défini dans l'admin. Il est mémorisé 30 jours chez le visiteur, et le changer révoque tous les accès déjà donnés.
 - Tout se règle dans `/admin` : plages horaires hebdomadaires (plusieurs plages par jour), dates particulières, durée, intervalle entre créneaux, temps tampon, délai minimum, horizon de réservation, nombre max. de RDV par jour, titre/description de l'événement, agendas à vérifier/inviter.
 
 ## 1. Créer les identifiants Google (une seule fois)
@@ -77,7 +78,8 @@ La page publique est à la racine : `https://VOTRE-DOMAINE/`. Elle peut être in
 
 - Les disponibilités sont calculées dans le fuseau configuré (heure d'été/hiver gérée) et affichées au visiteur dans **son** fuseau.
 - Juste avant de créer l'événement, le serveur revérifie le créneau auprès de Google : deux visiteurs ne peuvent pas réserver le même créneau.
-- Protection anti-spam : champ piège invisible + 5 réservations max. par IP et par quart d'heure.
+- Protection anti-spam : champ piège invisible + 5 réservations max. par IP et par quart d'heure (10 essais de mot de passe).
+- Avec un mot de passe, l'API des créneaux et de réservation est elle aussi bloquée, pas seulement l'affichage. Le cookie d'accès est `SameSite=Lax` : la page protégée ne fonctionne donc pas dans une `<iframe>` sur un autre domaine.
 - Le nombre max. de RDV par jour ne compte que les RDV créés par cette application et encore présents dans votre agenda : un RDV supprimé libère la place.
 - Pour annuler ou déplacer un rendez-vous, modifiez l'événement directement dans Google Agenda : les participants sont prévenus par Google.
 

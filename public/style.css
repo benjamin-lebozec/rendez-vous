@@ -135,8 +135,9 @@ h3 { font-size: 15px; margin: 0 0 12px; font-weight: 500; }
 
 .status { color: var(--muted); min-height: 1.5em; }
 
-#step-form { max-width: 480px; }
-form label { display: block; font-weight: 500; margin-bottom: 14px; font-size: 14px; }
+#step-form, .lock { max-width: 480px; }
+.hint { color: var(--muted); margin: -8px 0 20px; }
+#step-form label, .lock label { display: block; font-weight: 500; margin-bottom: 14px; font-size: 14px; }
 form .row { display: flex; gap: 12px; }
 form .row label { flex: 1; }
 

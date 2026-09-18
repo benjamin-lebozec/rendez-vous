@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { DateTime } from 'luxon';
+import { isUnlocked, unlock } from './access.js';
 import * as google from './google.js';
 import { getSettings, saveSettings } from './settings.js';
 import { computeSlots } from './slots.js';
@@ -119,8 +120,16 @@ function validateGuest(body) {
 
 app.get('/healthz', (req, res) => res.json({ ok: true }));
 
+// Blocks the booking API until the visitor has entered the page password (if any).
+function requireAccess(req, res, next) {
+  if (isUnlocked(req, getSettings().page.password)) return next();
+  res.status(401).json({ error: 'Mot de passe requis.', locked: true });
+}
+
 app.get('/api/config', (req, res) => {
   const s = getSettings();
+  res.set('Cache-Control', 'no-store');
+  if (!isUnlocked(req, s.page.password)) return res.json({ title: s.page.title, locked: true });
   res.json({
     title: s.page.title,
     intro: s.page.intro,
@@ -133,7 +142,14 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-app.get('/api/slots', asyncRoute(async (req, res) => {
+app.post('/api/unlock', rateLimit(10, 15 * 60_000), (req, res) => {
+  if (!unlock(req, res, getSettings().page.password)) {
+    return res.status(401).json({ error: 'Mot de passe incorrect.' });
+  }
+  res.json({ ok: true });
+});
+
+app.get('/api/slots', requireAccess, asyncRoute(async (req, res) => {
   const from = new Date(req.query.from);
   const to = new Date(req.query.to);
   if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || to <= from) {
@@ -144,7 +160,7 @@ app.get('/api/slots', asyncRoute(async (req, res) => {
   res.json({ slots: await availableSlots(from, to) });
 }));
 
-app.post('/api/book', rateLimit(5, 15 * 60_000), asyncRoute(async (req, res) => {
+app.post('/api/book', requireAccess, rateLimit(5, 15 * 60_000), asyncRoute(async (req, res) => {
   const body = req.body ?? {};
   // Honeypot field, invisible to humans.
   if (body.website) return res.json({ ok: true });

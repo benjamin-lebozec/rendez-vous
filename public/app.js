@@ -23,8 +23,19 @@ const state = {
 async function api(path, options) {
   const res = await fetch(path, options);
   const data = await res.json().catch(() => ({}));
+  // Password changed in /admin while the page was open: ask for it again.
+  if (res.status === 401 && data.locked) {
+    showLock();
+    throw new Error(data.error);
+  }
   if (!res.ok) throw new Error(data.error || 'Une erreur est survenue.');
   return data;
+}
+
+function showLock() {
+  for (const id of ['step-pick', 'step-form', 'step-done', 'meta']) $(id).hidden = true;
+  $('step-lock').hidden = false;
+  $('step-lock').elements.password.focus();
 }
 
 function capitalize(s) {
@@ -187,8 +198,32 @@ $('step-form').addEventListener('submit', async (e) => {
   }
 });
 
+$('step-lock').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.currentTarget;
+  const button = $('unlock');
+  button.disabled = true;
+  $('lock-error').textContent = '';
+  try {
+    await api('/api/unlock', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: form.elements.password.value }),
+    });
+    form.reset();
+    $('step-lock').hidden = true;
+    init();
+  } catch (err) {
+    $('lock-error').textContent = err.message;
+    form.elements.password.select();
+  } finally {
+    button.disabled = false;
+  }
+});
+
 async function init() {
   $('tz').textContent = tz;
+  $('step-pick').hidden = false;
   try {
     state.config = await api('/api/config');
   } catch (err) {
@@ -198,6 +233,11 @@ async function init() {
   const c = state.config;
   document.title = c.title;
   $('title').textContent = c.title;
+  if (c.locked) {
+    showLock();
+    return;
+  }
+  $('meta').hidden = false;
   $('intro').textContent = c.intro;
   $('organizer').textContent = c.organizerName;
   $('duration').textContent = `${c.durationMinutes} min`;

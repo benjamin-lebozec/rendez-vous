@@ -12,7 +12,7 @@
     <aside class="summary">
       <p class="organizer" id="organizer"></p>
       <h1 id="title">Prendre rendez-vous</h1>
-      <ul class="meta">
+      <ul class="meta" id="meta">
         <li><span class="icon" aria-hidden="true">🕒</span><span id="duration"></span></li>
         <li id="meet-info" hidden><span class="icon" aria-hidden="true">🎥</span>Visioconférence Google Meet</li>
         <li id="chosen" hidden><span class="icon" aria-hidden="true">📅</span><span id="chosen-text"></span></li>
@@ -21,8 +21,17 @@
     </aside>
 
     <section class="panel">
+      <!-- Step 0: page password (only when one is set in /admin) -->
+      <form id="step-lock" class="lock" hidden novalidate>
+        <h2>Accès protégé</h2>
+        <p class="hint">Saisissez le mot de passe qui vous a été communiqué pour voir les créneaux disponibles.</p>
+        <label>Mot de passe<input name="password" type="password" autocomplete="current-password" required maxlength="100"></label>
+        <p class="error" id="lock-error" role="alert"></p>
+        <button type="submit" class="primary" id="unlock">Accéder</button>
+      </form>
+
       <!-- Step 1: pick a slot -->
-      <div id="step-pick">
+      <div id="step-pick" hidden>
         <h2>Choisissez une date et une heure</h2>
         <div class="picker">
           <div class="calendar">
