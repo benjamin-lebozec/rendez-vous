@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Réglages · Rendez-vous</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body class="admin">
+  <header class="topbar">
+    <h1>Réglages de la prise de rendez-vous</h1>
+    <a href="/" target="_blank" rel="noopener">Voir la page publique ↗</a>
+  </header>
+
+  <p class="flash" id="flash" role="status" hidden></p>
+
+  <section class="box">
+    <h2>Compte Google</h2>
+    <div id="google-status">Chargement…</div>
+  </section>
+
+  <form id="settings" novalidate>
+    <section class="box">
+      <h2>Page publique</h2>
+      <label>Titre<input name="page.title" maxlength="150"></label>
+      <label>Nom affiché (vous / votre société)<input name="page.organizerName" maxlength="150"></label>
+      <label>Texte d’introduction<textarea name="page.intro" rows="3" maxlength="2000"></textarea></label>
+    </section>
+
+    <section class="box">
+      <h2>Événement créé</h2>
+      <label>Titre de l’événement
+        <input name="event.summary" maxlength="300">
+        <small>Variables : {prenom} {nom} {email} {telephone}</small>
+      </label>
+      <label>Description (ajoutée avant les coordonnées du client)<textarea name="event.description" rows="3" maxlength="5000"></textarea></label>
+      <div class="grid">
+        <label>Durée du rendez-vous (min)<input name="event.durationMinutes" type="number" min="5" max="480" step="5"></label>
+        <label class="check"><input name="event.addMeet" type="checkbox"> Ajouter une visio Google Meet</label>
+      </div>
+    </section>
+
+    <section class="box">
+      <h2>Disponibilités hebdomadaires</h2>
+      <p class="hint">Plages pendant lesquelles on peut réserver. Les créneaux déjà occupés dans les agendas cochés « vérifier » sont exclus automatiquement.</p>
+      <label class="narrow">Fuseau horaire<select name="availability.timezone" id="timezone"></select></label>
+      <div id="weekly" class="weekly"></div>
+    </section>
+
+    <section class="box">
+      <h2>Règles de réservation</h2>
+      <div class="grid">
+        <label>Intervalle entre les débuts de créneaux (min)
+          <input name="availability.slotStepMinutes" type="number" min="0" max="480" step="5">
+          <small>0 = égal à la durée du rendez-vous</small>
+        </label>
+        <label>Temps tampon avant / après (min)
+          <input name="availability.bufferMinutes" type="number" min="0" max="240" step="5">
+          <small>Marge libre exigée autour des autres événements</small>
+        </label>
+        <label>Délai minimum avant réservation (heures)
+          <input name="availability.minNoticeHours" type="number" min="0" max="1440">
+        </label>
+        <label>Réservable jusqu’à (jours à l’avance)
+          <input name="availability.maxDaysAhead" type="number" min="1" max="365">
+        </label>
+        <label>Rendez-vous max. par jour
+          <input name="availability.maxPerDay" type="number" min="0" max="100">
+          <small>0 = illimité</small>
+        </label>
+      </div>
+    </section>
+
+    <section class="box">
+      <h2>Dates particulières</h2>
+      <p class="hint">Remplacent les horaires hebdomadaires pour un jour donné (congés, horaires exceptionnels). Sans plage = indisponible toute la journée.</p>
+      <div id="overrides"></div>
+      <button type="button" class="ghost" id="add-override">+ Ajouter une date</button>
+    </section>
+
+    <section class="box">
+      <h2>Agendas des collègues</h2>
+      <p class="hint">
+        Votre agenda principal est toujours vérifié et l’événement y est créé.
+        <strong>Vérifier</strong> : les disponibilités de cet agenda sont prises en compte (il doit être partagé avec vous, au moins en « voir les disponibilités »).
+        <strong>Inviter</strong> : la personne est ajoutée aux participants et l’événement apparaît dans son agenda.
+      </p>
+      <table class="calendars">
+        <thead><tr><th>Agenda (e-mail / ID)</th><th>Nom</th><th>Vérifier</th><th>Inviter</th><th></th></tr></thead>
+        <tbody id="calendars"></tbody>
+      </table>
+      <div class="add-cal">
+        <input id="new-cal" type="email" placeholder="collegue@exemple.com">
+        <button type="button" class="ghost" id="add-cal">+ Ajouter</button>
+        <select id="cal-picker" hidden><option value="">— Choisir parmi mes agendas —</option></select>
+        <button type="button" class="ghost" id="load-cals">Parcourir mes agendas…</button>
+      </div>
+    </section>
+
+    <div class="savebar">
+      <p class="error" id="save-error" role="alert"></p>
+      <button type="submit" class="primary">Enregistrer</button>
+    </div>
+  </form>
+
+  <template id="range-tpl">
+    <span class="range">
+      <input type="time" class="start" step="300" required> – <input type="time" class="end" step="300" required>
+      <button type="button" class="icon-btn remove" aria-label="Supprimer la plage">✕</button>
+    </span>
+  </template>
+
+  <script src="/admin/admin.js" type="module"></script>
+</body>
+</html>

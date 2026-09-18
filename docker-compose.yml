@@ -1,0 +1,13 @@
+services:
+  rendez-vous:
+    build: .
+    image: rendez-vous:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+    volumes:
+      - rdv-data:/data
+
+volumes:
+  rdv-data:

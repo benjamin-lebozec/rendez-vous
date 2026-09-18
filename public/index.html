@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prendre rendez-vous</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="card">
+    <aside class="summary">
+      <p class="organizer" id="organizer"></p>
+      <h1 id="title">Prendre rendez-vous</h1>
+      <ul class="meta">
+        <li><span class="icon" aria-hidden="true">🕒</span><span id="duration"></span></li>
+        <li id="meet-info" hidden><span class="icon" aria-hidden="true">🎥</span>Visioconférence Google Meet</li>
+        <li id="chosen" hidden><span class="icon" aria-hidden="true">📅</span><span id="chosen-text"></span></li>
+      </ul>
+      <p class="intro" id="intro"></p>
+    </aside>
+
+    <section class="panel">
+      <!-- Step 1: pick a slot -->
+      <div id="step-pick">
+        <h2>Choisissez une date et une heure</h2>
+        <div class="picker">
+          <div class="calendar">
+            <div class="cal-head">
+              <button type="button" class="nav" id="prev" aria-label="Mois précédent">‹</button>
+              <span id="month-label"></span>
+              <button type="button" class="nav" id="next" aria-label="Mois suivant">›</button>
+            </div>
+            <div class="cal-grid weekdays" aria-hidden="true">
+              <span>lun.</span><span>mar.</span><span>mer.</span><span>jeu.</span><span>ven.</span><span>sam.</span><span>dim.</span>
+            </div>
+            <div class="cal-grid" id="days" role="grid"></div>
+            <p class="tz">Fuseau horaire : <strong id="tz"></strong></p>
+          </div>
+          <div class="times" id="times" hidden>
+            <h3 id="day-label"></h3>
+            <div id="time-list" class="time-list"></div>
+          </div>
+        </div>
+        <p class="status" id="pick-status" role="status"></p>
+      </div>
+
+      <!-- Step 2: guest details -->
+      <form id="step-form" hidden novalidate>
+        <button type="button" class="back" id="back">‹ Retour</button>
+        <h2>Vos coordonnées</h2>
+        <div class="row">
+          <label>Prénom *<input name="firstName" autocomplete="given-name" required maxlength="100"></label>
+          <label>Nom *<input name="lastName" autocomplete="family-name" required maxlength="100"></label>
+        </div>
+        <label>E-mail *<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+        <label>Téléphone *<input name="phone" type="tel" autocomplete="tel" required maxlength="30" pattern="\+?[0-9 \(\)\.\-]{6,25}"></label>
+        <label>Message (facultatif)<textarea name="message" rows="3" maxlength="2000"></textarea></label>
+        <label class="hp" aria-hidden="true">Site web<input name="website" tabindex="-1" autocomplete="off"></label>
+        <p class="error" id="form-error" role="alert"></p>
+        <button type="submit" class="primary" id="submit">Confirmer le rendez-vous</button>
+      </form>
+
+      <!-- Step 3: confirmation -->
+      <div id="step-done" hidden class="done">
+        <div class="done-check" aria-hidden="true">✓</div>
+        <h2>Rendez-vous confirmé</h2>
+        <p id="done-text"></p>
+        <p>Une invitation vient de vous être envoyée par e-mail.</p>
+        <p id="done-meet" hidden><a id="meet-link" target="_blank" rel="noopener">Lien de la visio</a></p>
+      </div>
+    </section>
+  </main>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

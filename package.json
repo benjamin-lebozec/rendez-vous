@@ -1,0 +1,21 @@
+{
+  "name": "rendez-vous",
+  "version": "1.0.0",
+  "description": "Page de prise de rendez-vous basée sur les disponibilités de plusieurs agendas Google",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch --env-file-if-exists=.env src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@googleapis/calendar": "^20.0.0",
+    "express": "^5.2.1",
+    "luxon": "^3.7.2"
+  }
+}
